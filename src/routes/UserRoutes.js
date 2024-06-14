@@ -5,7 +5,7 @@ const middleware = require("../middleware/authMiddleware");
 const router = Router();
 
 router.get("/userEmail", middleware.auth, UsersController.getUserEmail);
-router.get("/userId", UsersController.getUserId);
+router.get("/userId", middleware.auth, UsersController.getUserId);
 router.patch(
   "/userUpdate",
   middleware.auth,
