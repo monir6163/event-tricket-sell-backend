@@ -11,5 +11,13 @@ router.post(
   CatController.create
 );
 router.get("/all", CatController.all);
+router.get("/get", CatController.getAcategory);
+router.patch(
+  "/update",
+  middleware.auth,
+  upload.single("cat_img"),
+  CatController.update
+);
+router.delete("/delete", middleware.auth, CatController.delete);
 
 module.exports = router;

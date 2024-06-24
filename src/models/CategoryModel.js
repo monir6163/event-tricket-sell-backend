@@ -4,8 +4,6 @@ const categorySchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
-      trim: true,
       required: [true, "Please enter category name"],
     },
     cat_img: {
