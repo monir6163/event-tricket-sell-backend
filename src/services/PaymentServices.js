@@ -4,7 +4,7 @@ const Event = require("../models/EventModel");
 const Order = require("../models/OrderModel");
 let store_id = process.env.SSLCOMMERZ_STORE_ID;
 let store_passwd = process.env.SSLCOMMERZ_STORE_PASSWD;
-let is_live = process.env.MODE === "development" ? false : true;
+let is_live = false; //true for live, false for sandbox
 class paymentServices {
   createOrder = async (order) => {
     const findEvent = await Event.findOne({ _id: order?.event_id }).populate(
