@@ -10,7 +10,11 @@ router.post(
   upload.single("event_img"),
   EventController.createEvent
 );
-router.get("/get", middleware.auth, EventController.getEvents);
+router.get(
+  "/get/:pageNo/:perPage/:searchkeyword",
+  middleware.auth,
+  EventController.getEvents
+);
 router.get(
   "/getall/:pageNo/:perPage/:searchkeyword",
   EventController.getEvents
