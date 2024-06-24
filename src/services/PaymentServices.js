@@ -186,10 +186,12 @@ class paymentServices {
     findOrder.tran_date = tran_date;
     await findOrder.save();
     // also totalseat -1
-    const event = await Event.findOne({ _id: findOrder?.event_id });
-    event.totalSeat = event.totalSeat - 1;
-    event.qty = event.qty - 1;
-    await event.save();
+    if (data?.status === "VALID") {
+      const event = await Event.findOne({ _id: findOrder?.event_id });
+      event.totalSeat = event.totalSeat - 1;
+      event.qty = event.qty - 1;
+      await event.save();
+    }
 
     return {
       tran_id,
