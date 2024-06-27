@@ -38,10 +38,6 @@ router.delete("/delete/:id", middleware.auth, EventController.eventDelete);
 router.post("/review/:id", middleware.auth, EventController.eventReview);
 router.get("/review/:id", middleware.auth, EventController.getReviews);
 
-router.get(
-  "/category/events/:id",
-  middleware.auth,
-  EventController.categoryWiseEvent
-);
+router.get("/category/events/:id", EventController.categoryWiseEvent);
 
 module.exports = router;
