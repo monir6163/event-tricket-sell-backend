@@ -2,6 +2,7 @@ const SSLCommerzPayment = require("sslcommerz-lts");
 const error = require("../../utility/error");
 const Event = require("../models/EventModel");
 const Order = require("../models/OrderModel");
+const sendMail = require("../../utility/MailSend");
 let store_id = process.env.SSLCOMMERZ_STORE_ID;
 let store_passwd = process.env.SSLCOMMERZ_STORE_PASSWD;
 let is_live = false; //true for live, false for sandbox
@@ -66,6 +67,13 @@ class paymentServices {
       await event.save();
 
       await newOrder.save();
+
+      await sendMail(
+        order?.email,
+        `Event Management System : ${tran_id}`,
+        `Your Event is Booked Successfully : ${findEvent?.title}`
+      );
+
       return `${process.env.CLIENT_URL}/payment/success/${tran_id}`;
     }
     const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
@@ -109,6 +117,12 @@ class paymentServices {
     event.totalSeat = event.totalSeat - 1;
     event.qty = event.qty - 1;
     await event.save();
+
+    await sendMail(
+      findOrder?.order?.email,
+      `Event Management System : ${tran_id}`,
+      `Your Event is Booked Successfully : ${event?.title}`
+    );
 
     return {
       tran_id,

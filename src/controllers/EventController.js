@@ -51,6 +51,15 @@ class eventController {
       res.status(500).json({ message: error.message });
     }
   };
+  getEventsIdAdmin = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const event = await EventServices.getEventsIdAdmin(id);
+      res.status(200).json({ status: true, data: event });
+    } catch (error) {
+      next(error);
+    }
+  };
 
   getEventsId = async (req, res, next) => {
     try {
@@ -124,6 +133,41 @@ class eventController {
       res
         .status(200)
         .json({ status: true, message: "Event deleted successfully" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  eventReview = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const reviewData = req.body;
+      await EventServices.eventReview(id, reviewData);
+      res
+        .status(200)
+        .json({ status: true, message: "Review added successfully" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getReviews = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const reviews = await EventServices.getReviews(id);
+      res.status(200).json({ status: true, data: reviews });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  categoryWiseEvent = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const events = await EventServices.categoryWiseEvent(id);
+      res
+        .status(200)
+        .json({ status: true, count: events.length, data: events });
     } catch (error) {
       next(error);
     }

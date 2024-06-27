@@ -87,13 +87,26 @@ class eventServices {
     }
     return events;
   };
+  getEventsIdAdmin = async (id) => {
+    const event = await Event.findById(id).populate("category", "name");
+    if (!event) {
+      throw error("Invalid Credential", 400);
+    }
+    return event;
+  };
 
   getEventsId = async (id) => {
     const event = await Event.findById(id).populate("category", "name");
     if (!event) {
       throw error("Invalid Credential", 400);
     }
-    return event;
+
+    //check status false or true
+    if (event.status === "false") {
+      throw error("Event is not available", 400);
+    } else {
+      return event;
+    }
   };
 
   upComingEvents = async () => {
@@ -107,9 +120,28 @@ class eventServices {
       .sort({ createdAt: -1 });
 
     events?.map((event) => {
-      // check if event is expired or not
-      if (new Date(event.date) < new Date()) {
+      //make auto status false if event date is passed away
+      // 2024-06-27T06:50:52.566Z
+      // :52.566Z => remove this part
+
+      const newDate = new Date();
+      let formattedDate =
+        newDate.getFullYear() +
+        "-" +
+        ("0" + (newDate.getMonth() + 1)).slice(-2) +
+        "-" +
+        ("0" + newDate.getDate()).slice(-2) +
+        "T" +
+        ("0" + newDate.getHours()).slice(-2) +
+        ":" +
+        ("0" + newDate.getMinutes()).slice(-2);
+
+      // check if event date is passed away or not if passed away then make status false
+      if (event.date < formattedDate) {
         event.status = false;
+        event.save();
+      } else {
+        event.status = true;
         event.save();
       }
     });
@@ -122,6 +154,28 @@ class eventServices {
     if (!event) {
       throw error("Invalid Credential", 400);
     }
+
+    //
+    const newDate = new Date();
+    let formattedDate =
+      newDate.getFullYear() +
+      "-" +
+      ("0" + (newDate.getMonth() + 1)).slice(-2) +
+      "-" +
+      ("0" + newDate.getDate()).slice(-2) +
+      "T" +
+      ("0" + newDate.getHours()).slice(-2) +
+      ":" +
+      ("0" + newDate.getMinutes()).slice(-2);
+
+    // check if event date is passed away or not if passed away then make status false
+    if (event.date < formattedDate) {
+      console.log(event.date < formattedDate);
+      event.status = false;
+    } else {
+      event.status = true;
+    }
+
     if (eventData?.event_img) {
       if (event?.event_img?.public_id) {
         await DestroyCloudinary(event.event_img.public_id);
@@ -163,6 +217,53 @@ class eventServices {
     }
     await DestroyCloudinary(event?.event_img?.public_id);
     await Event.findByIdAndDelete(id);
+  };
+
+  eventReview = async (id, reviewData) => {
+    const event = await Event.findById(id);
+    if (!event) {
+      throw error("Invalid Credential", 400);
+    }
+    // check if user already reviewed the event same day or not
+    const isReviewed = event.reviews.find(
+      (r) =>
+        r.userId.toString() === reviewData.userId.toString() &&
+        r.createdAt.toDateString() === new Date().toDateString()
+    );
+    if (isReviewed) {
+      throw error("You already reviewed this event", 400);
+    }
+
+    const newReview = {
+      userId: reviewData.userId,
+      name: reviewData.name,
+      rating: reviewData.rating,
+      comment: reviewData.comment,
+    };
+    event.reviews.push(newReview);
+    await event.save();
+    return event;
+  };
+
+  getReviews = async (id) => {
+    const event = await Event.findById(id).populate("reviews.userId", [
+      "name",
+      "avater",
+    ]);
+    if (!event) {
+      throw error("Invalid Credential", 400);
+    }
+    return event.reviews;
+  };
+
+  categoryWiseEvent = async (id) => {
+    const events = await Event.find({ category: id }).populate("category", [
+      "name",
+    ]);
+    if (!events) {
+      throw error("Invalid Credential", 400);
+    }
+    return events;
   };
 }
 module.exports = new eventServices();

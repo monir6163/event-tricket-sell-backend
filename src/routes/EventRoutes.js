@@ -19,6 +19,11 @@ router.get(
   "/getall/:pageNo/:perPage/:searchkeyword",
   EventController.getEvents
 );
+router.get(
+  "/getall/admin/:id",
+  middleware.auth,
+  EventController.getEventsIdAdmin
+);
 router.get("/getId/:id", middleware.auth, EventController.getEventsId);
 router.get("/upcoming", EventController.upComingEvents);
 router.patch(
@@ -29,5 +34,14 @@ router.patch(
 );
 router.put("/update/status/:id", middleware.auth, EventController.eventStatus);
 router.delete("/delete/:id", middleware.auth, EventController.eventDelete);
+
+router.post("/review/:id", middleware.auth, EventController.eventReview);
+router.get("/review/:id", middleware.auth, EventController.getReviews);
+
+router.get(
+  "/category/events/:id",
+  middleware.auth,
+  EventController.categoryWiseEvent
+);
 
 module.exports = router;

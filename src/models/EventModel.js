@@ -51,6 +51,30 @@ const eventSchema = new Schema(
       type: String,
       default: true,
     },
+    reviews: [
+      {
+        userId: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
+        rating: {
+          type: Number,
+          required: true,
+        },
+        comment: {
+          type: String,
+          required: true,
+        },
+        eventId: {
+          type: Schema.Types.ObjectId,
+          ref: "Event",
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   {
     versionKey: false,
